@@ -49,5 +49,17 @@
 ## Estructura del proyecto
 
 ```
+├── README.md
+├── assets
+│   └── img
+│       └── image.png
+└── script.js
+```
 
+## Instruccciones
+
+1. Ubicado en la carpeta raiz del proyecto debes ejecutar
+
+```bash
+node script.js
 ```

@@ -1,3 +1,4 @@
+console.clear();
 const PERSONA_DEFAULT = {
   nombre: "",
   apellidos: "",
@@ -7,70 +8,106 @@ const PERSONA_DEFAULT = {
   sueldoBasePromedioSemestreAnterior: 0,
 };
 
-const getUpperCaseFullName = (NOMBRE = "", APELLIDOS = "") => {
-  NOMBRE = NOMBRE.toUpperCase();
-  APELLIDOS = APELLIDOS.toUpperCase();
-  return `${NOMBRE} ${APELLIDOS}`;
+const getUpperCaseFullName = (nombre = "", apellidos = "") => {
+  nombre = nombre.toUpperCase();
+  apellidos = apellidos.toUpperCase();
+  return `${nombre} ${apellidos}`;
 };
 
-const calcularAsignacion = (
-  sueldoBase = 0,
-  sueldoBasePromedioSemestreAnterior = 0,
-  tieneCargas = false
-) => {
-  if (!tieneCargas) return 0;
+const totalAsignacion = (asignacionPorCarga = 0, cantidadCargas = 0) => {
+  return asignacionPorCarga * cantidadCargas;
+};
+
+const calcularAsignacionFamiliar = (persona = PERSONA_DEFAULT) => {
+  const {
+    tieneCargas,
+    cantidadCargas,
+    sueldoBasePromedioSemestreAnterior,
+    nombre,
+    apellidos,
+    sueldoBase,
+  } = persona;
+  console.log("<---------------- 🤑  ---------------->");
+
+  if (!tieneCargas) {
+    console.log(
+      `Al Trabajador ${getUpperCaseFullName(
+        nombre,
+        apellidos
+      )} no le corresponde pago de asignación familiar.`,
+      persona
+    );
+    return persona;
+  }
+
+  let monto = 0;
+  let tramo = "D";
 
   if (sueldoBasePromedioSemestreAnterior <= 429899) {
-    return 16828;
+    monto = 16828;
+    tramo = "A";
   } else if (
     429899 < sueldoBasePromedioSemestreAnterior &&
     sueldoBasePromedioSemestreAnterior <= 627913
   ) {
-    return 10327;
+    monto = 10327;
+    tramo = "B";
   } else if (
     627913 < sueldoBasePromedioSemestreAnterior &&
     sueldoBasePromedioSemestreAnterior <= 979330
   ) {
-    return 3264;
-  } else return 0;
-};
+    monto = 3264;
+    tramo = "C";
+  }
 
-const totalAsignacion = (asignacionPorCarga = 0, cantidadCargas = 0) => {
-  return asignacionPorCarga * cargas;
-};
+  const total = totalAsignacion(monto, cantidadCargas);
 
-const program = (persona = PERSONA_DEFAULT) => {
-  const {
-    nombre,
-    apellidos,
-    tieneCargas,
-    cantidadCargas,
-    sueldoBase,
-    sueldoBasePromedioSemestreAnterior,
-  } = persona;
+  const personaActualizada = {
+    ...persona,
+    tramo,
+    montoAsignacion: monto,
+    totalAsignacion: total,
+    sueldoMasAsignacion: sueldoBase + total,
+  };
 
-  const nombreCompleto = getUpperCaseFullName(nombre, apellidos);
-  console.log(`nombreCompleto:`, nombreCompleto);
-
-  const asignacionPorCarga = calcularAsignacion(
-    sueldoBase,
-    sueldoBasePromedioSemestreAnterior,
-    tieneCargas
+  console.log(
+    `Al Trabajador ${getUpperCaseFullName(
+      nombre,
+      apellidos
+    )} le corresponde asignación familiar de $${monto} por su renta del semestre anterior que es: $${sueldoBasePromedioSemestreAnterior} (Tramo ${tramo}). Con las ${cantidadCargas} carga(s) el monto a recibir es de $${total}`,
+    personaActualizada
   );
-  console.log(`asignacionPorCarga:`, asignacionPorCarga);
-
-  const asignacionTotal = totalAsignacion(asignacionPorCarga, cantidadCargas);
-  console.log(`asignacionTotal:`, asignacionTotal);
-
-  
+  return personaActualizada;
 };
+
+// ejemplos
 
 const persona1 = {
   nombre: "Sebastán",
   apellidos: "Segura Osorio",
   tieneCargas: true,
-  cantidadCargas: 0,
-  sueldoBase: 500000,
-  sueldoBasePromedioSemestreAnterior: 449650,
+  cantidadCargas: 2,
+  sueldoBase: 624103,
+  sueldoBasePromedioSemestreAnterior: 419000,
 };
-program(persona1);
+calcularAsignacionFamiliar(persona1);
+
+const persona2 = {
+  nombre: "Pepito",
+  apellidos: "Pérez",
+  tieneCargas: false,
+  cantidadCargas: 0,
+  sueldoBase: 950000,
+  sueldoBasePromedioSemestreAnterior: 960000,
+};
+calcularAsignacionFamiliar(persona2);
+
+const persona3 = {
+  nombre: "María",
+  apellidos: "Mojo jojo",
+  tieneCargas: true,
+  cantidadCargas: 3,
+  sueldoBase: 780000,
+  sueldoBasePromedioSemestreAnterior: 620000,
+};
+calcularAsignacionFamiliar(persona3);
